@@ -1,0 +1,158 @@
+class Validate:
+    def __init__(self, secuencia):
+        self.secuencia=secuencia
+    
+    def validate_len(self):
+        return len(self.secuencia)==6
+    
+    def validate_patron(self):
+        patron = {'A','T','G','C'}
+        for i in self.secuencia:
+            if i not in patron:
+                return False
+        return True
+
+class CrearAdn:
+    
+    def __init__(self, dimension):
+        
+        self.dimension=dimension
+
+    def adn(self):
+            dna = []
+            
+            for i in range(self.dimension):
+                validate =False
+                
+                while not validate:
+                    secuencia=input(f'ingrese 6 caracteres para la secuencia {i+1} de adn: ')
+                    comprobar=Validate(secuencia)                            
+                    if comprobar.validate_len() and comprobar.validate_patron():
+                        validate =True
+                        dna.append(list(secuencia))
+                    else:
+                        print("recuerde que tienen que ser seis caracteres y solo pueden ser 'A','T','G','C', intente nuevamente")
+            
+            return dna
+    
+class Analizardna():
+
+    def analizarfilas(self,guardar_dna):
+        cont_horizontales=0
+        for row in guardar_dna:
+            count = 1
+            for col in range(len(row)-1):
+                if row[col]==row[col+1]:
+                    count += 1
+                    if count >= 4:
+                        cont_horizontales +=1
+                        break  
+                else:
+                    count = 1
+        
+        return cont_horizontales
+
+        
+    def AnalizarColumnas(self,guardar_dna):
+        cont_Verticales=0
+        for col in range(dimension):
+            count = 1
+            for row in range(dimension -1):
+                if guardar_dna[row][col]==guardar_dna[row+1][col]:
+                    count += 1
+                    if count >= 4:
+                        cont_Verticales +=1
+                        break
+                else:
+                    count = 1
+        
+        return cont_Verticales
+
+    def AnalizarOblicuas(self,guardar_dna):
+        cont_oblicuas=0
+        count1 = 1
+        count2 = 1
+        count3 = 1
+        dimension_local = dimension - 1 
+        for offset in range(dimension_local):
+            if guardar_dna[offset][offset]==guardar_dna[offset+1][offset+1]:
+                count1 += 1
+                if count1 >= 4:
+                    cont_oblicuas +=1
+                    count1 = 1
+            else:
+                count1 = 1
+
+            if offset < dimension-2:
+                if guardar_dna[offset][offset+1]==guardar_dna[offset+1][offset+2]:
+                    count2 += 1
+                    if count2 >= 4:
+                        cont_oblicuas +=1
+                        count2 = 1
+                else:
+                    count2 = 1
+
+                if guardar_dna[offset+1][offset]==guardar_dna[offset+2][offset+1]:
+                    count3 += 1
+                    if count3 >= 4:
+                        cont_oblicuas +=1
+                        count3 = 1
+                else:
+                    count3 = 1
+           
+        return cont_oblicuas
+    def AnalizarOblicuasInversas(self,guardar_dna):
+        cont_oblicuas_inversas=0
+        count1 = 1
+        count2 = 1
+        count3 = 1
+        dimension_local = dimension - 1 
+        for offset in range(dimension_local):
+            if guardar_dna[dimension_local-offset][offset]==guardar_dna[dimension_local-offset-1][offset+1]:
+                count1 += 1
+                if count1 >= 4:
+                    cont_oblicuas_inversas +=1
+                    count1 = 1
+            else:
+                count1 = 1
+
+            if offset < dimension_local-1:
+                
+                if guardar_dna[dimension_local-offset][offset+1]==guardar_dna[(dimension_local-offset)-1][offset+2]:
+                    count2 += 1
+                    if count2 >= 4:
+                        cont_oblicuas_inversas +=1
+                        count2 = 1
+                else:
+                    count2 = 1
+                if guardar_dna[(dimension-offset)-1][offset]==guardar_dna[(dimension_local-offset)-2][offset+1]:
+                    count3 += 1
+                    if count3 >= 4:
+                        cont_oblicuas_inversas +=1
+                        count3 = 1
+                else:
+                    count3 = 1
+              
+        return cont_oblicuas_inversas
+    
+dimension=6
+mutante = CrearAdn(dimension)
+dna=mutante.adn()
+
+def isMutant(dna):
+    
+    analizado=Analizardna()
+    acumulador=0
+
+    acumulador += analizado.AnalizarOblicuas(dna) 
+    acumulador += analizado.AnalizarOblicuasInversas(dna) 
+    acumulador += analizado.AnalizarColumnas(dna) 
+    acumulador += analizado.analizarfilas(dna)
+    return True  if acumulador > 1 else  False
+
+if isMutant(dna):
+    print("Es mutante" )   
+else:
+    print("No es mutante")
+
+
